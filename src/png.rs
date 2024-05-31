@@ -14,7 +14,34 @@ impl PNG {
         assert_eq!(signature, Self::SIGNATURE);
         &bytes[8..]
     }
-
-
-    
 }
+
+
+/// Idea here is read in a raw chunk and then parse it based on the chunk_type
+pub struct Chunk<'a> {
+    size: &'a [u8; 4],
+    chunk_type: &'a [u8; 4],
+    chunk_data: &'a [u8],
+    crc: &'a [u8; 4]
+}
+
+/// Been getting them from here [https://www.w3.org/TR/PNG-Chunks.html#:~:text=A%20valid%20PNG%20image%20must,chunks%2C%20and%20an%20IEND%20chunk.] 
+/// this is all the structs for each chunk type possible
+struct IHDR {}
+struct IDAT {}
+struct IEND {}
+struct PLTE {}
+struct bkGD {}
+struct cHRM {}
+struct gAMA {}
+struct pHYs {}
+struct sBIT {}
+struct tEXt {}
+struct tIME {}
+struct tRNS {}
+struct zTXT {}
+
+// I think these can be ignored so maybe no point ?
+struct AnicillaryChunk {}
+
+
