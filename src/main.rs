@@ -1,3 +1,7 @@
+use std::fs;
+use png_base64_rs::PNG;
+
 fn main() {
-    println!("Hello, world!");
+    let file_contents = fs::read("src/test-image.png").unwrap();
+    let _png: PNG = PNG::from_bytes(&file_contents);    
 }
