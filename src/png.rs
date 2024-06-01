@@ -1,6 +1,5 @@
 pub struct PNG {}
 
-
 impl PNG {
     const SIGNATURE: &'static [u8] = &[137, 80, 78, 71, 13, 10, 26, 10];
 
@@ -10,7 +9,7 @@ impl PNG {
         while !chunk_bytes.is_empty() {
             let (chunk, rem) = Self::read_chunk(chunk_bytes);
             chunk_bytes = rem;
-           
+
             println!("Chunk type {}", chunk.dbg_type());
             println!("This is a chunk {:?}", chunk);
         }
@@ -77,16 +76,16 @@ impl<'a> Chunk<'a> {
     const IDAT_CODE: &'static [u8; 4] = &[0x49, 0x44, 0x41, 0x54];
     const PLTE_CODE: &'static [u8; 4] = &[0x50, 0x4C, 0x54, 0x45];
     const IEND_CODE: &'static [u8; 4] = &[0x49, 0x45, 0x4E, 0x44];
-    
-    pub fn dbg_type(&'a self) -> &str{
+
+    pub fn dbg_type(&'a self) -> &str {
         match self.chunk_type {
             Self::IHDR_CODE => "IHDR",
             Self::IDAT_CODE => "IDAT",
             Self::IEND_CODE => "IEND",
             Self::PLTE_CODE => "PLTE",
-            _ => "Ancillary"
+            _ => "Ancillary",
         }
-    } 
+    }
 }
 
 /// Been getting them from here [https://www.w3.org/TR/PNG-Chunks.html#:~:text=A%20valid%20PNG%20image%20must,chunks%2C%20and%20an%20IEND%20chunk.]
