@@ -6,9 +6,14 @@ impl PNG {
     const SIGNATURE: &'static [u8] = &[137, 80, 78, 71, 13, 10, 26, 10];
 
     pub fn from_bytes(bytes: &[u8]) -> Self {
-        let chunk_bytes: &[u8] = Self::read_and_check_file_signature(bytes);
-        let (chunk, rem) = Self::read_chunk(chunk_bytes);
-        dbg!(chunk);
+        let mut chunk_bytes: &[u8] = Self::read_and_check_file_signature(bytes);
+
+        while !chunk_bytes.is_empty() {
+            let (chunk, rem) = Self::read_chunk(chunk_bytes);
+            chunk_bytes = rem;
+            println!("This is a chunk {:?}", chunk);
+        }
+
         PNG {}
     }
 
