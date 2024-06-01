@@ -24,6 +24,10 @@ impl PNGFileBuffer {
         buff.read_exact(signature_buffer).unwrap();
         assert_eq!(signature_buffer, Self::SIGNATURE);
     }
+
+    fn read_chunk(&mut self) -> PNGChunk {
+
+    }
 }
 
 impl PNG {
@@ -31,6 +35,35 @@ impl PNG {
         let file: File = File::open(path).unwrap();
 
         PNG {}
+    }
+}
+
+#[derive(Debug)]
+pub struct Chunk<'a> {
+    size: u32,
+    chunk_type: &'a [u8; 4],
+    chunk_data: &'a [u8],
+    crc: &'a [u8; 4],
+}
+
+// Enum for all the chunk types
+pub enum PNGChunk {
+    IHDR(IHDR),
+    IDAT(IDAT),
+    IEND(IEND),
+    PLTE(PLTE),
+    NotImplemented 
+}
+
+impl<'a> From<Chunk<'a>> for PNGChunk {
+    fn from(chunk: Chunk) -> Self {
+        match chunk.chunk_type {
+            IHDR::CODE => PNGChunk::IHDR(IHDR {}),
+            IDAT::CODE => PNGChunk::IDAT(IDAT {}),
+            IEND::CODE => PNGChunk::IEND(IEND {}),
+            PLTE::CODE => PNGChunk::PLTE(PLTE {}),
+            _ => PNGChunk::NotImplemented
+        }
     }
 }
 
@@ -46,7 +79,7 @@ impl IDAT {
 
 struct IEND {}
 impl IEND {
-    const IEND: &'static [u8; 4] = &[0x49, 0x45, 0x4E, 0x44];
+    const CODE: &'static [u8; 4] = &[0x49, 0x45, 0x4E, 0x44];
 }
 
 struct PLTE {}
