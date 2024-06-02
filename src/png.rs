@@ -33,8 +33,8 @@ impl PNGFileBuffer {
         let mut chunk_type: [u8; 4] = [0; 4];
         let _ = self.try_read_exact(&mut chunk_type)?;
 
-        let chunk_data: Vec<u8> = vec![0; size as usize];
-        let _ = self.try_read_exact(&mut chunk_type)?;
+        let mut chunk_data: Vec<u8> = vec![0; size as usize];
+        let _ = self.try_read_exact(&mut chunk_data)?;
 
         let mut crc: [u8; 4] = [0; 4];
         let _ = self.try_read_exact(&mut crc)?;
@@ -77,6 +77,7 @@ pub struct Chunk {
 }
 
 // Enum for all the chunk types
+#[derive(Debug)]
 pub enum PNGChunk {
     IHDR(IHDR),
     IDAT(IDAT),
@@ -97,32 +98,53 @@ impl From<Chunk> for PNGChunk {
     }
 }
 
+#[derive(Debug)]
 struct IHDR {}
 impl IHDR {
     const CODE: &'static [u8; 4] = &[0x49, 0x48, 0x44, 0x52];
 }
 
+#[derive(Debug)]
 struct IDAT {}
 impl IDAT {
     const CODE: &'static [u8; 4] = &[0x49, 0x44, 0x41, 0x54];
 }
 
+#[derive(Debug)]
 struct IEND {}
 impl IEND {
     const CODE: &'static [u8; 4] = &[0x49, 0x45, 0x4E, 0x44];
 }
 
+#[derive(Debug)]
 struct PLTE {}
 impl PLTE {
     const CODE: &'static [u8; 4] = &[0x50, 0x4C, 0x54, 0x45];
 }
 
+#[derive(Debug)]
 struct bkGD {}
+
+#[derive(Debug)]
 struct cHRM {}
+
+#[derive(Debug)]
 struct gAMA {}
+
+#[derive(Debug)]
 struct pHYs {}
+
+#[derive(Debug)]
 struct sBIT {}
+
+#[derive(Debug)]
 struct tEXt {}
+
+#[derive(Debug)]
 struct tIME {}
+
+#[derive(Debug)]
 struct tRNS {}
+
+#[derive(Debug)]
 struct zTXT {}

@@ -1,4 +1,4 @@
-use png_base64_rs::PNGFileBuffer;
+use png_base64_rs::{PNGFileBuffer, PNGChunk};
 use std::fs::File;
 
 fn main() {
@@ -6,6 +6,7 @@ fn main() {
     let mut buffer = PNGFileBuffer::new(file); 
 
     while let Some(chunk) = buffer.read_chunk() {
-        dbg!(chunk);
+        let png_chunk: PNGChunk = chunk.into();
+        dbg!(png_chunk);
     }
 }
