@@ -27,17 +27,17 @@ impl PNGFileBuffer {
     /// Read one chunk in. Returns None if EOF reached
     pub fn read_chunk(&mut self) -> Option<Chunk> {
         let mut size_bytes: [u8; 4] = [0; 4];
-        let _ = self.try_read_exact(&mut size_bytes)?;
+        let _ = self.try_read_exact(&mut size_bytes)?.unwrap();
         let size: u32 = u32::from_be_bytes(size_bytes);
 
         let mut chunk_type: [u8; 4] = [0; 4];
-        let _ = self.try_read_exact(&mut chunk_type)?;
+        let _ = self.try_read_exact(&mut chunk_type)?.unwrap();
 
         let mut chunk_data: Vec<u8> = vec![0; size as usize];
-        let _ = self.try_read_exact(&mut chunk_data)?;
+        let _ = self.try_read_exact(&mut chunk_data)?.unwrap();
 
         let mut crc: [u8; 4] = [0; 4];
-        let _ = self.try_read_exact(&mut crc)?;
+        let _ = self.try_read_exact(&mut crc)?.unwrap();
 
         Some(Chunk {
             size,
