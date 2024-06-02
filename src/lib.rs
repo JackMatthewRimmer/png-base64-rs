@@ -1,3 +1,3 @@
 mod png;
-mod test;
-pub use png::PNG;
+
+pub use png::PNGFileBuffer;
