@@ -146,7 +146,7 @@ impl IDAT {
 
 impl From<Chunk> for IDAT {
     fn from(chunk: Chunk) -> Self {
-        unimplemented!()
+        IDAT {}
     }
 }
 
@@ -158,7 +158,7 @@ impl IEND {
 
 impl From<Chunk> for IEND {
     fn from(chunk: Chunk) -> Self {
-        unimplemented!()
+        IEND {}
     }
 }
 
