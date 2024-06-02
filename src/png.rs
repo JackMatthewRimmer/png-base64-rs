@@ -43,17 +43,16 @@ impl PNGFileBuffer {
             size,
             chunk_type,
             chunk_data,
-            crc
+            crc,
         })
     }
 
-    pub fn try_read_exact(&mut self,  buf: &mut [u8]) -> Option<std::io::Result<()>> {
+    pub fn try_read_exact(&mut self, buf: &mut [u8]) -> Option<std::io::Result<()>> {
         let result = self.buffer.read_exact(buf);
         if let Err(ref error) = result {
             match error.kind() {
                 std::io::ErrorKind::UnexpectedEof => return None,
-                _ => return Some(result)
-
+                _ => return Some(result),
             }
         }
         Some(Ok(()))
@@ -83,68 +82,132 @@ pub enum PNGChunk {
     IDAT(IDAT),
     IEND(IEND),
     PLTE(PLTE),
-    NotImplemented 
+    AncillaryChunk(Chunk),
 }
 
 impl From<Chunk> for PNGChunk {
     fn from(chunk: Chunk) -> Self {
         match &chunk.chunk_type {
-            IHDR::CODE => PNGChunk::IHDR(IHDR {}),
-            IDAT::CODE => PNGChunk::IDAT(IDAT {}),
-            IEND::CODE => PNGChunk::IEND(IEND {}),
-            PLTE::CODE => PNGChunk::PLTE(PLTE {}),
-            _ => PNGChunk::NotImplemented
+            IHDR::CODE => PNGChunk::IHDR(chunk.into()),
+            IDAT::CODE => PNGChunk::IDAT(chunk.into()),
+            IEND::CODE => PNGChunk::IEND(chunk.into()),
+            PLTE::CODE => PNGChunk::PLTE(chunk.into()),
+            _ => PNGChunk::AncillaryChunk(chunk),
         }
     }
 }
 
 #[derive(Debug)]
-struct IHDR {}
+pub struct IHDR {
+    width: u32,
+    height: u32,
+    bit_depth: u8,
+    color_type: u8,
+    compression_method: u8,
+    filter_method: u8,
+    interlace_method: u8,
+}
+
 impl IHDR {
     const CODE: &'static [u8; 4] = &[0x49, 0x48, 0x44, 0x52];
 }
 
+impl From<Chunk> for IHDR {
+    fn from(chunk: Chunk) -> Self {
+        assert_eq!(chunk.size, 13);
+        let data = chunk.chunk_data;
+        let width_bytes = data[0..4].try_into().expect("Failed to index width bytes");
+        let width: u32 = u32::from_be_bytes(width_bytes);
+        let height_bytes = data[4..8].try_into().expect("Failed to read height bytes");
+        let height: u32 = u32::from_be_bytes(height_bytes);
+        let bit_depth: u8 = *data.get(8).expect("Failed to get bit depth");
+        let color_type: u8 = *data.get(9).expect("Failed to get color type");
+        let compression_method: u8 = *data.get(10).expect("Failed to get compression method");
+        let filter_method: u8 = *data.get(11).expect("Failed to get filter method");
+        let interlace_method: u8 = *data.get(12).expect("Failed to get interlace method");
+
+        IHDR {
+            width,
+            height,
+            bit_depth,
+            color_type,
+            compression_method,
+            filter_method,
+            interlace_method,
+        }
+    }
+}
+
 #[derive(Debug)]
-struct IDAT {}
+pub struct IDAT {}
 impl IDAT {
     const CODE: &'static [u8; 4] = &[0x49, 0x44, 0x41, 0x54];
 }
 
+impl From<Chunk> for IDAT {
+    fn from(chunk: Chunk) -> Self {
+        unimplemented!()
+    }
+}
+
 #[derive(Debug)]
-struct IEND {}
+pub struct IEND {}
 impl IEND {
     const CODE: &'static [u8; 4] = &[0x49, 0x45, 0x4E, 0x44];
 }
 
+impl From<Chunk> for IEND {
+    fn from(chunk: Chunk) -> Self {
+        unimplemented!()
+    }
+}
+
 #[derive(Debug)]
-struct PLTE {}
+pub struct PLTE {}
 impl PLTE {
     const CODE: &'static [u8; 4] = &[0x50, 0x4C, 0x54, 0x45];
 }
 
+impl From<Chunk> for PLTE {
+    fn from(chunk: Chunk) -> Self {
+        unimplemented!()
+    }
+}
+
+/// We are ignoring all of these chunks for the first implementation
+/// as they are not 'critical chunk's'
 #[derive(Debug)]
+#[allow(unused, non_camel_case_types)]
 struct bkGD {}
 
 #[derive(Debug)]
+#[allow(unused, non_camel_case_types)]
 struct cHRM {}
 
 #[derive(Debug)]
+#[allow(unused, non_camel_case_types)]
 struct gAMA {}
 
 #[derive(Debug)]
+#[allow(unused, non_camel_case_types)]
 struct pHYs {}
 
 #[derive(Debug)]
+#[allow(unused, non_camel_case_types)]
 struct sBIT {}
 
 #[derive(Debug)]
+#[allow(unused, non_camel_case_types)]
 struct tEXt {}
 
 #[derive(Debug)]
+#[allow(unused, non_camel_case_types)]
 struct tIME {}
 
 #[derive(Debug)]
+#[allow(unused, non_camel_case_types)]
 struct tRNS {}
 
 #[derive(Debug)]
+#[allow(unused, non_camel_case_types)]
 struct zTXT {}
